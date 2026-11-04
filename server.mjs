@@ -4,13 +4,14 @@ import rateLimit from "express-rate-limit"
 import { config } from "./config.js"
 
 const app = express()
+app.set("trust proxy", config.app.trustProxy)
 app.use(express.json({ limit: config.app.jsonLimit }))
 
 const contactLimiter = rateLimit({
   windowMs: config.contact.rateWindowMs,
   max: config.contact.rateMax,
-  standardHeaders: true,
-  legacyHeaders: false,
+  standardHeaders: config.contact.rateStandardHeaders,
+  legacyHeaders: config.contact.rateLegacyHeaders,
   message: { error: config.contact.errorMessages.rateLimit },
 })
 
@@ -33,11 +34,11 @@ function getTransporter() {
   })
 }
 
-app.get("/health", (_req, res) => res.json({ ok: true }))
+app.get(config.app.healthPath, (_req, res) => res.json({ ok: true }))
 
 app.post(config.contact.endpointPath, contactLimiter, async (req, res) => {
   try {
-    const { name, email, service, message, submittedAt } = req.body || {}
+    const { name, email, service, message } = req.body || {}
     const honeypot = req.body?.[config.contact.honeypotField]
 
     if (!name || !email || !message) {
@@ -47,7 +48,7 @@ app.post(config.contact.endpointPath, contactLimiter, async (req, res) => {
       return res.status(400).json({ error: config.contact.errorMessages.spam })
     }
 
-    const submittedAtMs = Number(submittedAt)
+    const submittedAtMs = Number(config.contact.timestampFields.map(field => req.body[field]).find(value => value != null))
     if (!Number.isFinite(submittedAtMs) || Date.now() - submittedAtMs < config.contact.minSubmitMs) {
       return res.status(400).json({ error: config.contact.errorMessages.tooFast })
     }
@@ -80,13 +81,15 @@ app.post(config.contact.endpointPath, contactLimiter, async (req, res) => {
       text: adminBody,
     })
 
-    await transporter.sendMail({
-      from: fromAddress,
-      to: email,
-      subject: config.contact.confirmSubject,
-      text: config.contact.confirmBody,
-      ...(config.contact.confirmReplyTo ? { replyTo: config.contact.confirmReplyTo } : {}),
-    })
+    if (config.contact.confirmationEnabled) {
+      await transporter.sendMail({
+        from: fromAddress,
+        to: email,
+        subject: config.contact.confirmSubject,
+        text: config.contact.confirmBody,
+        ...(config.contact.confirmReplyTo ? { replyTo: config.contact.confirmReplyTo } : {}),
+      })
+    }
 
     return res.json({ ok: true })
   } catch (error) {
@@ -95,7 +98,7 @@ app.post(config.contact.endpointPath, contactLimiter, async (req, res) => {
   }
 })
 
-app.listen(config.app.port, "0.0.0.0", () => {
+app.listen(config.app.port, config.app.host, () => {
   const url = `http://${config.app.host}:${config.app.port}`
   console.log(renderTemplate(config.logMessages.apiListening, { url }))
 })

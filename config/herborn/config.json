@@ -1,0 +1,25 @@
+{
+  "contact": {
+    "subjectPrefix": "Neue Anfrage – Ferienwohnung Herborn",
+    "confirmBody": "Vielen Dank für Ihre Anfrage bei Ferienwohnung Herborn. Wir melden uns so schnell wie möglich bei Ihnen.",
+    "templates": {
+      "adminSubject": "{subjectPrefix} von {name}",
+      "adminBody": "Name: {name}\nE-Mail: {email}\nAufenthalt: {service}\n\nNachricht:\n{message}"
+    },
+    "confirmSubject": "Vielen Dank für Ihre Anfrage",
+    "errorMessages": {
+      "required": "Name, E-Mail und Nachricht sind erforderlich.",
+      "nameTooLong": "Der Name ist zu lang.",
+      "messageTooLong": "Die Nachricht ist zu lang.",
+      "spam": "Spam erkannt.",
+      "tooFast": "Bitte warten Sie einen Moment und senden Sie das Formular erneut.",
+      "rateLimit": "Zu viele Anfragen. Bitte versuchen Sie es später erneut.",
+      "sendFailure": "Die E-Mail konnte nicht gesendet werden.",
+      "smtpMissing": "Die SMTP-Konfiguration fehlt. Bitte setzen Sie die Umgebungsvariablen."
+    }
+  },
+  "logMessages": {
+    "apiListening": "Kontakt-API gestartet auf {url}",
+    "errorPrefix": "Fehler im Kontaktformular:"
+  }
+}

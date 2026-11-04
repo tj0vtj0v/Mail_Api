@@ -1,0 +1,53 @@
+{
+  "app": {
+    "port": 8787,
+    "jsonLimit": "1mb",
+    "host": "0.0.0.0",
+    "trustProxy": 1,
+    "healthPath": "/health"
+  },
+  "contact": {
+    "endpointPath": "/api/contact",
+    "maxMessageLength": 5000,
+    "maxNameLength": 200,
+    "minSubmitMs": 4000,
+    "honeypotField": "website",
+    "rateWindowMs": 900000,
+    "rateMax": 5,
+    "placeholders": {
+      "emptyService": "-"
+    },
+    "errorMessages": {
+      "required": "Name, email, and message are required.",
+      "nameTooLong": "Name is too long.",
+      "messageTooLong": "Message is too long.",
+      "spam": "Spam detected.",
+      "tooFast": "Please wait a moment before submitting the form again.",
+      "rateLimit": "Too many requests. Please try again later.",
+      "sendFailure": "The email could not be sent.",
+      "smtpMissing": "Missing SMTP configuration. Please set environment variables."
+    },
+    "timestampFields": [
+      "submittedAt"
+    ],
+    "subjectPrefix": "New contact inquiry",
+    "confirmSubject": "Thank you for your message",
+    "confirmBody": "Thank you for your message.",
+    "templates": {
+      "adminSubject": "{subjectPrefix} from {name}",
+      "adminBody": "Name: {name}\nEmail: {email}\nSubject: {service}\n\nMessage:\n{message}"
+    },
+    "confirmationEnabled": true,
+    "rateStandardHeaders": true,
+    "rateLegacyHeaders": false,
+    "confirmReplyTo": ""
+  },
+  "logMessages": {
+    "apiListening": "Contact API listening on {url}",
+    "errorPrefix": "Contact form error:"
+  },
+  "smtp": {
+    "port": 587,
+    "secure": false
+  }
+}

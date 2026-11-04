@@ -1,0 +1,8 @@
+{
+  "contact": {
+    "confirmBody": "Thank you for your message. I will get back to you as soon as possible.",
+    "templates": {
+      "adminBody": "Name: {name}\nEmail: {email}\nService: {service}\n\nMessage:\n{message}"
+    }
+  }
+}
