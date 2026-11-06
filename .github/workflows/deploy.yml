@@ -19,8 +19,6 @@ jobs:
           script: |
             cd /docker/mail_api || exit 1
             git pull --ff-only origin main || exit 2
-            docker compose -f /docker/docker-compose.yml build professional_mail_api || exit 3
-            docker compose -f /docker/docker-compose.yml up -d --no-build professional_mail_api herborn_mail_api || exit 4
-            docker compose -f /docker/docker-compose.yml exec -T main_webserver nginx -t || exit 5
-            docker compose -f /docker/docker-compose.yml exec -T main_webserver nginx -s reload || exit 6
-
+            docker compose up -d --build || exit 3
+            cd .. || exit 4
+            docker-compose restart || exit 5

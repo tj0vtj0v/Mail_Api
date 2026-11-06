@@ -50,15 +50,17 @@ code, not arbitrary configuration.
 
 ## Deploy code updates
 
-From `/docker`:
+From `/docker/mail_api`:
 
 ```sh
 docker compose build professional_mail_api
 docker compose up -d --no-build professional_mail_api herborn_mail_api
-docker compose exec -T main_webserver nginx -t
-docker compose exec -T main_webserver nginx -s reload
+docker compose -f /docker/docker-compose.yml exec -T main_webserver nginx -t
+docker compose -f /docker/docker-compose.yml exec -T main_webserver nginx -s reload
 ```
 
+The local `docker-compose.yml` manages both instances under project `mail_api`.
+The root `/docker/docker-compose.yml` manages the shared Nginx webserver.
 The mail repository's GitHub workflow runs this process after pulling main.
 The Nginx reload refreshes upstream addresses after container recreation.
 
@@ -70,8 +72,8 @@ the file (including after an editor replaces the file atomically):
 
 ```sh
 docker compose up -d --no-build --force-recreate herborn_mail_api
-docker compose exec -T main_webserver nginx -t
-docker compose exec -T main_webserver nginx -s reload
+docker compose -f /docker/docker-compose.yml exec -T main_webserver nginx -t
+docker compose -f /docker/docker-compose.yml exec -T main_webserver nginx -s reload
 ```
 
 The API trusts one reverse proxy hop; keep it behind Nginx without published
@@ -83,9 +85,9 @@ Health checks use http://127.0.0.1:8787/health and do not test SMTP delivery.
 
 ## Verify configuration and delivery behavior without sending email
 
-From `/docker`, after building the shared image:
+From `/docker/mail_api`, after building the shared image:
 
 ```sh
-docker compose run --rm --no-deps -T professional_mail_api node --input-type=module < mail_api/tests/config-smoke.mjs
-docker compose run --rm --no-deps -T herborn_mail_api node --input-type=module < mail_api/tests/config-smoke.mjs
+docker compose run --rm --no-deps -T professional_mail_api node --input-type=module < tests/config-smoke.mjs
+docker compose run --rm --no-deps -T herborn_mail_api node --input-type=module < tests/config-smoke.mjs
 ```
